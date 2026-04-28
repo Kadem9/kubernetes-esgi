@@ -1,0 +1,66 @@
+---
+# configmap : settings.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-settings
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  settings.yaml: |
+{{ .Files.Get "files/settings.yaml" | indent 4 }}
+---
+# confgmap : services.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-services
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  services.yaml: |
+{{ .Files.Get "files/services.yaml" | indent 4 }}
+---
+# configmap : widgets.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-widgets
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  widgets.yaml: |
+{{ .Files.Get "files/widgets.yaml" | indent 4 }}
+---
+# configmap : bookmarks.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-bookmarks
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  bookmarks.yaml: |
+{{ .Files.Get "files/bookmarks.yaml" | indent 4 }}
+---
+# configmap : kubernetes.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-kubernetes
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  kubernetes.yaml: |
+{{ .Files.Get "files/kubernetes.yaml" | indent 4 }}
+---
+# configmap  : custom.css
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homepage.fullname" . }}-custom
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  custom.css: |
+{{ .Files.Get "files/custom.css" | indent 4 }}

@@ -1,0 +1,21 @@
+apiVersion: v2
+name: homepage
+description: Chart Helm pour deployer gethomepage/homepage sur Kubernetes
+type: application
+
+version: 0.1.0
+
+appVersion: "latest"
+
+keywords:
+  - homepage
+  - dashboard
+  - devops
+  - kubernetes
+
+home: https://gethomepage.dev
+sources:
+  - https://github.com/gethomepage/homepage
+
+maintainers:
+  - name: Projet esgi

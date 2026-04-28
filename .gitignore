@@ -1,0 +1,13 @@
+values-secrets.yaml
+**/values-secrets.yaml
+
+velero/credentials-velero
+**/credentials-velero
+
+# Notes locales et config Claude Code
+tmp/
+.claude/
+
+*.log
+
+.DS_Store

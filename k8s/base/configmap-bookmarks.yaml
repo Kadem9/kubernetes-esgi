@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-bookmarks
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  bookmarks.yaml: |
+    - DevOps:
+        - Kubernetes Docs:
+            - href: https://kubernetes.io/docs/
+        - Helm Docs:
+            - href: https://helm.sh/docs/
+        - Grafana Docs:
+            - href: https://grafana.com/docs/
+
+    - Projet Annuel:
+        - GitHub:
+            - href: https://github.com/Kadem9/curateur-esgi-projet

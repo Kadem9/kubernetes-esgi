@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "homepage.fullname" . }}
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "homepage.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "homepage.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/configmaps: {{ include (print $.Template.BasePath "/configmaps.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "homepage.fullname" . }}
+      containers:
+        - name: homepage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: {{ include "homepage.fullname" . }}
+            {{- if .Values.github.enabled }}
+            - secretRef:
+                name: {{ include "homepage.fullname" . }}-github-token
+            {{- end }}
+            {{- if .Values.trello.enabled }}
+            - secretRef:
+                name: {{ include "homepage.fullname" . }}-trello
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.probes.liveness.port }}
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.probes.liveness.host }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.probes.readiness.port }}
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.probes.readiness.host }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          volumeMounts:
+            - name: settings-config
+              mountPath: /app/config/settings.yaml
+              subPath: settings.yaml
+            - name: services-config
+              mountPath: /app/config/services.yaml
+              subPath: services.yaml
+            - name: widgets-config
+              mountPath: /app/config/widgets.yaml
+              subPath: widgets.yaml
+            - name: bookmarks-config
+              mountPath: /app/config/bookmarks.yaml
+              subPath: bookmarks.yaml
+            - name: kubernetes-config
+              mountPath: /app/config/kubernetes.yaml
+              subPath: kubernetes.yaml
+            - name: custom-config
+              mountPath: /app/config/custom.css
+              subPath: custom.css
+      volumes:
+        - name: settings-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-settings
+        - name: services-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-services
+        - name: widgets-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-widgets
+        - name: bookmarks-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-bookmarks
+        - name: kubernetes-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-kubernetes
+        - name: custom-config
+          configMap:
+            name: {{ include "homepage.fullname" . }}-custom

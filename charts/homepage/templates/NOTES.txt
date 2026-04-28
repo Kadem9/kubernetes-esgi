@@ -1,0 +1,45 @@
+Le dashboard Homepage a ete deploye dans le namespace {{ .Release.Namespace }}.
+
+1. Ouvre l'application dans ton navigateur :
+{{- if .Values.ingress.enabled }}
+
+   http://{{ .Values.ingress.host }}
+
+   (verifie que {{ .Values.ingress.host }} pointe bien vers ton ingress controller dans /etc/hosts)
+{{- else }}
+
+   kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "homepage.fullname" . }} 3000:{{ .Values.service.port }}
+   puis ouvre http://localhost:3000
+{{- end }}
+
+2. Verifie l'etat du deploiement :
+
+   kubectl get pods,svc,ingress -n {{ .Release.Namespace }}
+   helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+{{- if .Values.autoscaling.enabled }}
+
+3. Le HPA est actif (min={{ .Values.autoscaling.minReplicas }}, max={{ .Values.autoscaling.maxReplicas }}, cible CPU={{ .Values.autoscaling.targetCPUUtilizationPercentage }}%) :
+
+   kubectl get hpa {{ include "homepage.fullname" . }} -n {{ .Release.Namespace }}
+{{- end }}
+
+{{- if .Values.service.sessionAffinity.enabled }}
+
+4. Sticky session activee (timeout {{ .Values.service.sessionAffinity.timeoutSeconds }}s) — colle le client a un pod fixe pour eviter les reloads automatiques.
+{{- end }}
+
+{{- if not .Values.github.enabled }}
+
+ATTENTION : github.enabled=false. Les widgets "Suivi GitHub" ne seront pas alimentes.
+Active via : --set github.enabled=true --set github.token=<ton_token>
+{{- end }}
+
+{{- if not .Values.trello.enabled }}
+
+ATTENTION : trello.enabled=false. Les widgets "Suivi Trello" ne seront pas alimentes.
+Active via : --set trello.enabled=true --set trello.key=<ta_key> --set trello.token=<ton_token>
+{{- end }}
+
+Pour modifier la config du dashboard, edite les fichiers dans charts/homepage/files/
+puis relance : helm upgrade {{ .Release.Name }} charts/homepage -n {{ .Release.Namespace }}

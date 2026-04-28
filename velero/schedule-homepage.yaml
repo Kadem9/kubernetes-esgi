@@ -1,0 +1,14 @@
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: homepage-daily
+  namespace: velero
+spec:
+  schedule: "0 2 * * *"
+  template:
+    includedNamespaces:
+      - homepage
+    storageLocation: default
+    ttl: 720h0m0s
+    defaultVolumesToFsBackup: true

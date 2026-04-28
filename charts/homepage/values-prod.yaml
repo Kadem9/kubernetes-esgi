@@ -1,0 +1,25 @@
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: homepage.local
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+dashboard:
+  settings:
+    title: "Kubernetes DevOps Dashboard [PROD]"
+    headerStyle: clean

@@ -1,0 +1,21 @@
+title: "Kubernetes DevOps Dashboard"
+headerStyle: clean
+layout:
+  Monitoring:
+    style: row
+    columns: 3
+  Application:
+    style: row
+    columns: 2
+  Cluster Live:
+    style: row
+    columns: 5
+  Sauvegarde Velero:
+    style: row
+    columns: 4
+  Suivi GitHub:
+    style: row
+    columns: 5
+  Documentation:
+    style: row
+    columns: 2

@@ -1,0 +1,385 @@
+- Application:
+    - Homepage:
+        href: http://homepage.local
+        description: "Dashboard principal du projet"
+
+- Cluster Live:
+    - Pods actifs:
+        icon: si-kubernetes
+        description: "Total de pods dans le cluster"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=count(kube_pod_info)
+          refreshInterval: 10000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Pods
+              format: number
+
+    - Namespaces:
+        icon: si-kubernetes
+        description: "Nombre de namespaces"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=count(kube_namespace_created)
+          refreshInterval: 30000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Namespaces
+              format: number
+
+    - CPU cluster:
+        icon: si-prometheus
+        description: "Utilisation CPU moyenne"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=100-(avg(rate(node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B2m%5D))*100)
+          refreshInterval: 10000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: CPU %
+              format: float
+
+    - RAM used GB:
+        icon: si-prometheus
+        description: "Memoire consommee"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=(node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/1024/1024/1024
+          refreshInterval: 10000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: RAM GB
+              format: float
+
+    - Homepage replicas:
+        icon: si-kubernetes
+        description: "Replicas homepage (HPA)"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=kube_deployment_status_replicas%7Bnamespace%3D%22homepage%22,deployment%3D%22homepage%22%7D
+          refreshInterval: 5000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Replicas
+              format: number
+
+- Monitoring:
+    - Grafana:
+        id: grafana-card
+        href: http://grafana.local
+        description: "Visualisation des métriques et logs"
+    - Prometheus:
+        id: prometheus-card
+        href: http://prometheus.local
+        description: "Collecte et requêtes sur les métriques"
+    - Loki:
+        id: loki-card
+        href: http://loki.local
+        description: "Stockage centralisé des logs"
+
+- Sauvegarde Velero:
+    - Backups totaux:
+        icon: si-velero
+        description: "Nombre total de backups crees"
+        href: http://homepage.local
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=sum(velero_backup_total)
+          refreshInterval: 15000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Total
+              format: number
+
+    - Backups reussis:
+        icon: si-velero
+        description: "Backups terminés avec succes"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=sum(velero_backup_success_total)
+          refreshInterval: 15000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Succes
+              format: number
+
+    - Backups echoues:
+        icon: si-velero
+        description: "Backups en erreur (doit rester a 0)"
+        widget:
+          type: customapi
+          url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/query?query=sum(velero_backup_failure_total)
+          refreshInterval: 15000
+          display: list
+          mappings:
+            - field:
+                data:
+                  result:
+                    "0":
+                      value: "1"
+              label: Echecs
+              format: number
+
+    - MinIO console:
+        icon: si-minio
+        href: http://minio.local
+        description: "Console MinIO - stockage S3 des backups"
+
+- Suivi GitHub:
+    - Commit 1 - dernier:
+        icon: si-github
+        href: https://github.com/Kadem9/curateur-esgi-projet/commits/main
+        description: "Dernier commit pushé"
+        widget:
+          type: customapi
+          url: https://api.github.com/repos/Kadem9/curateur-esgi-projet/commits?per_page=5
+          refreshInterval: 300000
+          display: list
+          headers:
+            User-Agent: "homepage-dashboard-k8s"
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{HOMEPAGE_VAR_GITHUB_TOKEN}}"
+            X-GitHub-Api-Version: "2022-11-28"
+          mappings:
+            - field:
+                "0":
+                  commit:
+                    author: name
+              label: Auteur
+            - field:
+                "0":
+                  commit: message
+              label: Message
+            - field:
+                "0":
+                  commit:
+                    author: date
+              label: Date
+              format: relativeDate
+
+    - Commit 2:
+        icon: si-git
+        href: https://github.com/Kadem9/curateur-esgi-projet/commits/main
+        widget:
+          type: customapi
+          url: https://api.github.com/repos/Kadem9/curateur-esgi-projet/commits?per_page=5
+          refreshInterval: 300000
+          display: list
+          headers:
+            User-Agent: "homepage-dashboard-k8s"
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{HOMEPAGE_VAR_GITHUB_TOKEN}}"
+            X-GitHub-Api-Version: "2022-11-28"
+          mappings:
+            - field:
+                "1":
+                  commit:
+                    author: name
+              label: Auteur
+            - field:
+                "1":
+                  commit: message
+              label: Message
+            - field:
+                "1":
+                  commit:
+                    author: date
+              label: Date
+              format: relativeDate
+
+    - Commit 3:
+        icon: si-git
+        href: https://github.com/Kadem9/curateur-esgi-projet/commits/main
+        widget:
+          type: customapi
+          url: https://api.github.com/repos/Kadem9/curateur-esgi-projet/commits?per_page=5
+          refreshInterval: 300000
+          display: list
+          headers:
+            User-Agent: "homepage-dashboard-k8s"
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{HOMEPAGE_VAR_GITHUB_TOKEN}}"
+            X-GitHub-Api-Version: "2022-11-28"
+          mappings:
+            - field:
+                "2":
+                  commit:
+                    author: name
+              label: Auteur
+            - field:
+                "2":
+                  commit: message
+              label: Message
+            - field:
+                "2":
+                  commit:
+                    author: date
+              label: Date
+              format: relativeDate
+
+    - Commit 4:
+        icon: si-git
+        href: https://github.com/Kadem9/curateur-esgi-projet/commits/main
+        widget:
+          type: customapi
+          url: https://api.github.com/repos/Kadem9/curateur-esgi-projet/commits?per_page=5
+          refreshInterval: 300000
+          display: list
+          headers:
+            User-Agent: "homepage-dashboard-k8s"
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{HOMEPAGE_VAR_GITHUB_TOKEN}}"
+            X-GitHub-Api-Version: "2022-11-28"
+          mappings:
+            - field:
+                "3":
+                  commit:
+                    author: name
+              label: Auteur
+            - field:
+                "3":
+                  commit: message
+              label: Message
+            - field:
+                "3":
+                  commit:
+                    author: date
+              label: Date
+              format: relativeDate
+
+    - Commit 5:
+        icon: si-git
+        href: https://github.com/Kadem9/curateur-esgi-projet/commits/main
+        widget:
+          type: customapi
+          url: https://api.github.com/repos/Kadem9/curateur-esgi-projet/commits?per_page=5
+          refreshInterval: 300000
+          display: list
+          headers:
+            User-Agent: "homepage-dashboard-k8s"
+            Accept: "application/vnd.github+json"
+            Authorization: "Bearer {{HOMEPAGE_VAR_GITHUB_TOKEN}}"
+            X-GitHub-Api-Version: "2022-11-28"
+          mappings:
+            - field:
+                "4":
+                  commit:
+                    author: name
+              label: Auteur
+            - field:
+                "4":
+                  commit: message
+              label: Message
+            - field:
+                "4":
+                  commit:
+                    author: date
+              label: Date
+              format: relativeDate
+
+- Suivi Trello:
+    - Board - Projet Annuel M2 IW:
+        icon: si-trello
+        href: https://trello.com/b/hSkOxAgf/projet-annuel-m2-iw
+        description: "Vue d'ensemble du board Trello"
+        widget:
+          type: customapi
+          url: https://api.trello.com/1/boards/69a4428cc7bc6635ffc7f719?key={{HOMEPAGE_VAR_TRELLO_KEY}}&token={{HOMEPAGE_VAR_TRELLO_TOKEN}}&fields=name,dateLastActivity
+          refreshInterval: 60000
+          display: list
+          mappings:
+            - field: name
+              label: Nom
+            - field: dateLastActivity
+              label: Derniere activite
+              format: relativeDate
+
+    - Cartes ouvertes:
+        icon: si-trello
+        href: https://trello.com/b/hSkOxAgf/projet-annuel-m2-iw
+        description: "Total cartes actives sur le board"
+        widget:
+          type: customapi
+          url: https://api.trello.com/1/boards/69a4428cc7bc6635ffc7f719/cards?key={{HOMEPAGE_VAR_TRELLO_KEY}}&token={{HOMEPAGE_VAR_TRELLO_TOKEN}}&fields=id
+          refreshInterval: 60000
+          display: list
+          mappings:
+            - field: length
+              label: Cartes
+              format: number
+
+    - Listes du board:
+        icon: si-trello
+        href: https://trello.com/b/hSkOxAgf/projet-annuel-m2-iw
+        description: "Nombre de listes (colonnes)"
+        widget:
+          type: customapi
+          url: https://api.trello.com/1/boards/69a4428cc7bc6635ffc7f719/lists?key={{HOMEPAGE_VAR_TRELLO_KEY}}&token={{HOMEPAGE_VAR_TRELLO_TOKEN}}&fields=name
+          refreshInterval: 300000
+          display: list
+          mappings:
+            - field: length
+              label: Listes
+              format: number
+
+    - Derniere carte:
+        icon: si-trello
+        href: https://trello.com/b/hSkOxAgf/projet-annuel-m2-iw
+        description: "Carte la plus recemment modifiee"
+        widget:
+          type: customapi
+          url: https://api.trello.com/1/boards/69a4428cc7bc6635ffc7f719/cards?key={{HOMEPAGE_VAR_TRELLO_KEY}}&token={{HOMEPAGE_VAR_TRELLO_TOKEN}}&fields=name,dateLastActivity&limit=1&sort=-dateLastActivity
+          refreshInterval: 60000
+          display: list
+          mappings:
+            - field:
+                "0": name
+              label: Carte
+            - field:
+                "0": dateLastActivity
+              label: Modifiee
+              format: relativeDate
+
+- Documentation:
+    - Kubernetes Docs:
+        href: https://kubernetes.io/docs/
+        description: "Documentation officielle Kubernetes"
+    - Homepage Docs:
+        href: https://gethomepage.dev/
+        description: "Documentation officielle Homepage"

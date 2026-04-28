@@ -1,0 +1,74 @@
+:root {
+  --kdd-accent: 99, 179, 237;
+  --kdd-accent-strong: 56, 139, 253;
+  --kdd-glow:
+    0 0 0 1px rgba(var(--kdd-accent), 0.35),
+    0 10px 30px -10px rgba(var(--kdd-accent), 0.45);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(56, 139, 253, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(168, 85, 247, 0.12), transparent 55%),
+    #0b1020 !important;
+}
+
+h2,
+.services-group h2,
+.bookmarks-group h2 {
+  position: relative;
+  padding-bottom: 0.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 42px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--kdd-accent-strong), 0.9),
+    rgba(var(--kdd-accent), 0)
+  );
+}
+
+:is(.dark .dark\:bg-white\/5),
+:is(.dark .dark\:bg-theme-900\/20) {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px !important;
+  background-color: rgba(17, 24, 49, 0.72) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    transform 160ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.service-card:hover,
+.bookmark:hover,
+#grafana-card:hover,
+#prometheus-card:hover,
+#loki-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--kdd-accent), 0.45);
+  box-shadow: var(--kdd-glow);
+}
+
+#grafana-card    { border-left: 3px solid #F46800; }
+#prometheus-card { border-left: 3px solid #E6522C; }
+#loki-card       { border-left: 3px solid #FFD748; }
+
+.service-description,
+.bookmark-description {
+  opacity: 0.78;
+}
+
+.gap-x-2 { column-gap: 1.25rem !important; }
+.gap-y-2 { row-gap: 1.25rem !important; }

@@ -1,0 +1,26 @@
+# Patterns par defaut helm create
+.DS_Store
+.git/
+.gitignore
+.bzr/
+.bzrignore
+.hg/
+.hgignore
+.svn/
+*.swp
+*.bak
+*.tmp
+*.orig
+*~
+.project
+.idea/
+*.tmproj
+.vscode/
+
+# Specifique a ce chart : valeurs sensibles ne doivent jamais etre packagees
+values-secrets.yaml
+values-secrets.*.yaml
+
+# Backups locaux et logs
+*.log
+*.backup
